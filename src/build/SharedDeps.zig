@@ -149,6 +149,8 @@ pub fn add(
                 .verbose = false,
             });
             c.addSystemIncludePath(.{ .cwd_relative = libc.sys_include_dir.? });
+        } else if (target.result.abi.isAndroid()) {
+            try @import("android_ndk").addTranslateCPaths(b, c);
         }
         step.root_module.addImport("locale-c", c.createModule());
     }
@@ -172,6 +174,9 @@ pub fn add(
                         .verbose = false,
                     });
                     c.addSystemIncludePath(.{ .cwd_relative = libc.sys_include_dir.? });
+                },
+                .linux => if (target.result.abi.isAndroid()) {
+                    try @import("android_ndk").addTranslateCPaths(b, c);
                 },
                 else => {},
             }

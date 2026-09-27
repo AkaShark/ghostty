@@ -35,6 +35,9 @@ pub fn initStatic(
         .use_llvm = true,
     });
     lib.linkLibC();
+    if (lib.rootModuleTarget().abi.isAndroid()) {
+        try @import("android_ndk").addPaths(b, lib);
+    }
 
     // These must be bundled since we're compiling into a static lib.
     // Otherwise, you get undefined symbol errors.
@@ -88,6 +91,9 @@ pub fn initShared(
         .use_llvm = true,
     });
     _ = try deps.add(lib);
+    if (lib.rootModuleTarget().abi.isAndroid()) {
+        try @import("android_ndk").addPaths(b, lib);
+    }
 
     // On Windows with MSVC, building a DLL requires the full CRT library
     // chain. linkLibC() (called via deps.add) provides msvcrt.lib, but
